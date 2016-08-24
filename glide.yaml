@@ -1,0 +1,13 @@
+package: github.com/xtfly/gofd
+import:
+- package: github.com/cihub/seelog
+- package: github.com/labstack/echo
+  subpackages:
+  - engine/standard
+  - log
+  - middleware
+- package: github.com/labstack/gommon
+  subpackages:
+  - log
+- package: github.com/xtfly/gokits
+- package: gopkg.in/yaml.v2

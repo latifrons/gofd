@@ -24,15 +24,12 @@ S端与BT的Tracker机制也不一样，它不会维护节点的已下载的文�
 
 ### 下载依赖与GoFD
 
-    go get github.com/labstack/echo
-    go get github.com/labstack/gommon
-    go get github.com/valyala/fasthttp
-    go get golang.org/x/net # 需要翻墙或git clone github.com/golang/net
-    go get github.com/dgrijalva/jwt-go
-    go get github.com/cihub/seelog
-    go get gopkg.in/yaml.v2
-    go get github.com/xtfly/gokits
-    go get github.com/xtfly/gofd
+本工程采用[`glide`](https://github.com/Masterminds/glide)来管理第三方依赖
+    
+```
+go get github.com/xtfly/gofd
+glide install
+```
 
 ### 修改配置
 
@@ -58,7 +55,7 @@ net:
         key: /Users/xiao/server.key
 auth:
     username: gofd #管理端口与数据端口用于认证的用户名
-    passowrd: yrsK+2iiwPqecImH7obTUm1vhnvvQzFmYYiOz5oqaoc= #管理端口与数据端口用于认证的密码
+    password: yrsK+2iiwPqecImH7obTUm1vhnvvQzFmYYiOz5oqaoc= #管理端口与数据端口用于认证的密码
     factor: 9427e80d # passwd加密密钥因子
     crc: 63F7  # passwd加密密钥因子的校验码
 control:
@@ -82,7 +79,7 @@ net:
         key: /Users/xiao/server.key
 auth:
     username: gofd
-    passowrd: yrsK+2iiwPqecImH7obTUm1vhnvvQzFmYYiOz5oqaoc= 
+    password: yrsK+2iiwPqecImH7obTUm1vhnvvQzFmYYiOz5oqaoc= 
     factor: 9427e80d
     crc: 63F7
 control:
