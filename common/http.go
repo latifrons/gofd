@@ -55,7 +55,7 @@ func SendHttpReqWithClien(client *http.Client, cfg *Config, method, addr, urlpat
 		return nil, err
 	}
 
-	req.SetBasicAuth(cfg.Auth.Username, cfg.Auth.Passowrd)
+	req.SetBasicAuth(cfg.Auth.Username, cfg.Auth.Password)
 	req.Header.Set("Content-Type", "application/json")
 	//log.Debugf("Sending http request %v", req)
 

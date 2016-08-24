@@ -105,7 +105,7 @@ func (s *BaseService) IsRunning() bool {
 }
 
 func (s *BaseService) Auth(u, p string) bool {
-	if u == s.Cfg.Auth.Username && p == s.Cfg.Auth.Passowrd {
+	if u == s.Cfg.Auth.Username && p == s.Cfg.Auth.Password {
 		return true
 	}
 	return false

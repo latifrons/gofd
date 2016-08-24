@@ -44,7 +44,7 @@ type Header struct {
 	Len      int32
 	TaskId   string
 	Username string
-	Passowrd string
+	Password string
 	Salt     string
 }
 

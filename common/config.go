@@ -39,7 +39,7 @@ type Config struct {
 
 	Auth struct {
 		Username string `yaml:"username"`
-		Passowrd string `yaml:"passowrd"`
+		Password string `yaml:"password"`
 		Factor   string `yaml:"factor"`
 		Crc      string `yaml:"crc"`
 	} `yaml:"auth"`
@@ -116,8 +116,8 @@ func (c *Config) validate() error {
 		}
 	}
 
-	if c.Auth.Username == "" || c.Auth.Passowrd == "" || c.Auth.Factor == "" || c.Auth.Crc == "" {
-		return errors.New("Not set auth in  config file")
+	if c.Auth.Username == "" || c.Auth.Password == "" || c.Auth.Factor == "" || c.Auth.Crc == "" {
+		return errors.New("Not set auth in config file")
 	}
 
 	var err error
@@ -125,7 +125,7 @@ func (c *Config) validate() error {
 	if err != nil {
 		return err
 	}
-	c.Auth.Passowrd, err = c.Crypto.DecryptStr(c.Auth.Passowrd)
+	c.Auth.Password, err = c.Crypto.DecryptStr(c.Auth.Password)
 	if err != nil {
 		return err
 	}

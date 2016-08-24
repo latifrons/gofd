@@ -126,7 +126,7 @@ func readHeader(conn net.Conn) (h *Header, err error) {
 		return
 	}
 
-	if h.Passowrd, err = readString(buf); err != nil {
+	if h.Password, err = readString(buf); err != nil {
 		return
 	}
 
@@ -147,7 +147,7 @@ func readString(buf *bytes.Buffer) (str string, err error) {
 }
 
 func writeHeader(conn net.Conn, taskId string, cfg *common.Config) (err error) {
-	pwd, salt := gokits.GenPasswd(cfg.Auth.Passowrd, 8)
+	pwd, salt := gokits.GenPasswd(cfg.Auth.Password, 8)
 	all := [][]byte{[]byte(taskId),
 		[]byte(cfg.Auth.Username),
 		[]byte(pwd),
@@ -174,7 +174,7 @@ func (h *Header) validate(cfg *common.Config) error {
 		return fmt.Errorf("username or password is incorrect")
 	}
 
-	if !gokits.CmpPasswd(cfg.Auth.Passowrd, h.Salt, h.Passowrd) {
+	if !gokits.CmpPasswd(cfg.Auth.Password, h.Salt, h.Password) {
 		return fmt.Errorf("username or password is incorrect")
 	}
 
