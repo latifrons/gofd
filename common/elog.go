@@ -17,6 +17,7 @@ func toString(j glog.JSON) string {
 	return string(b)
 }
 
+// NewEchoLogger ...
 func NewEchoLogger() log.Logger {
 	return &elog{}
 }

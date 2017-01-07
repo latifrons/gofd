@@ -54,10 +54,10 @@ func (s *BaseService) initlog() {
 func (s *BaseService) runEcho() error {
 	net := s.Cfg.Net
 	var sr *standard.Server
-	if net.Tls != nil {
+	if net.TLS != nil {
 		sr = standard.WithTLS(fmt.Sprintf("%s:%v", net.IP, net.MgntPort),
-			net.Tls.Cert,
-			net.Tls.Key,
+			net.TLS.Cert,
+			net.TLS.Key,
 		)
 	} else {
 		sr = standard.New(fmt.Sprintf("%s:%v", net.IP, net.MgntPort))

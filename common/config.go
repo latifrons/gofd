@@ -31,7 +31,7 @@ type Config struct {
 		AgentMgntPort int `yaml:"agentMgntPort,omitempty"`
 		AgentDataPort int `yaml:"agentDataPort,omitempty"`
 
-		Tls *struct {
+		TLS *struct {
 			Cert string `yaml:"cert"`
 			Key  string `yaml:"key"`
 		} `yaml:"tls,omitempty"`
@@ -81,9 +81,9 @@ func (c *Config) defaultValue() {
 		c.Log = normalFile(c.Log)
 	}
 
-	if c.Net.Tls != nil {
-		c.Net.Tls.Cert = normalFile(c.Net.Tls.Cert)
-		c.Net.Tls.Key = normalFile(c.Net.Tls.Key)
+	if c.Net.TLS != nil {
+		c.Net.TLS.Cert = normalFile(c.Net.TLS.Cert)
+		c.Net.TLS.Key = normalFile(c.Net.TLS.Key)
 	}
 
 	if c.Control == nil {

@@ -238,7 +238,7 @@ func (s *TaskSession) connectToPeer(peer string) error {
 	}
 
 	// 发送消息头，用于认证
-	err = writeHeader(conn, s.taskID, s.g.cfg)
+	err = writePHeader(conn, s.taskID, s.g.cfg)
 	if err != nil {
 		log.Errorf("[%s] Failed to send header to peer[%s], error=%v", s.taskID, peer, err)
 		conn.Close()

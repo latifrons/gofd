@@ -3,7 +3,6 @@ package common
 import (
 	"bytes"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -36,7 +35,7 @@ func CreateHTTPClient(cfg *Config) *http.Client {
 		MaxIdleConnsPerHost:   1,
 		DisableKeepAlives:     true,
 	}
-	if cfg.Net.Tls != nil {
+	if cfg.Net.TLS != nil {
 		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 	client = &http.Client{Transport: tr}
@@ -46,7 +45,7 @@ func CreateHTTPClient(cfg *Config) *http.Client {
 // SendHTTPReqWithClient ...
 func SendHTTPReqWithClient(client *http.Client, cfg *Config, method, addr, urlpath string, reqBody []byte) (rspBody []byte, err error) {
 	schema := "http"
-	if cfg.Net.Tls != nil {
+	if cfg.Net.TLS != nil {
 		schema = "https"
 	}
 
@@ -72,7 +71,7 @@ func SendHTTPReqWithClient(client *http.Client, cfg *Config, method, addr, urlpa
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 300 {
-		return nil, errors.New(fmt.Sprintf("Recv http status code %v", resp.StatusCode))
+		return nil, fmt.Errorf("Recv http status code %v", resp.StatusCode)
 	}
 
 	if resp.ContentLength > 0 {

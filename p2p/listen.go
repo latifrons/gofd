@@ -53,7 +53,7 @@ func StartListen(cfg *common.Config) (conChan chan *PeerConn, listener net.Liste
 			}
 			tempDelay = 0
 
-			h, err := readHeader(conn)
+			h, err := readPHeader(conn)
 			if err != nil {
 				log.Error("Error reading header: ", err)
 				continue
@@ -94,8 +94,8 @@ func CreateListener(cfg *common.Config) (listener net.Listener, err error) {
 }
 
 // reading header info
-func readHeader(conn net.Conn) (h *Header, err error) {
-	h = &Header{}
+func readPHeader(conn net.Conn) (h *PHeader, err error) {
+	h = &PHeader{}
 
 	var bslen int32
 	err = binary.Read(conn, binary.BigEndian, &bslen)
@@ -147,7 +147,7 @@ func readString(buf *bytes.Buffer) (str string, err error) {
 	return
 }
 
-func writeHeader(conn net.Conn, taskID string, cfg *common.Config) (err error) {
+func writePHeader(conn net.Conn, taskID string, cfg *common.Config) (err error) {
 	pwd, salt := gokits.GenPasswd(cfg.Auth.Password, 8)
 	all := [][]byte{[]byte(taskID),
 		[]byte(cfg.Auth.Username),
@@ -170,7 +170,7 @@ func writeHeader(conn net.Conn, taskID string, cfg *common.Config) (err error) {
 	return
 }
 
-func (h *Header) validate(cfg *common.Config) error {
+func (h *PHeader) validate(cfg *common.Config) error {
 	if h.Username != cfg.Auth.Username {
 		return fmt.Errorf("username or password is incorrect")
 	}
