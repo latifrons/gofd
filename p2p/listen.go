@@ -12,26 +12,26 @@ import (
 	"github.com/xtfly/gokits"
 )
 
-// P2pConn wraps an incoming network connection and contains metadata that helps
+// PeerConn wraps an incoming network connection and contains metadata that helps
 // identify which active p2pSession it's relevant for.
-type P2pConn struct {
+type PeerConn struct {
 	conn       net.Conn
 	client     bool //  对端是否为客户端
 	remoteAddr net.Addr
-	taskId     string
+	taskID     string
 }
 
 // StartListen listens on a TCP port for incoming connections and
 // demuxes them to the appropriate active p2pSession based on the taskId
 // in the header.
-func StartListen(cfg *common.Config) (conChan chan *P2pConn, listener net.Listener, err error) {
+func StartListen(cfg *common.Config) (conChan chan *PeerConn, listener net.Listener, err error) {
 	listener, err = CreateListener(cfg)
 	if err != nil {
 		return
 	}
 
-	conChan = make(chan *P2pConn)
-	go func(cfg *common.Config, conChan chan *P2pConn) {
+	conChan = make(chan *PeerConn)
+	go func(cfg *common.Config, conChan chan *PeerConn) {
 		var tempDelay time.Duration
 		for {
 			conn, e := listener.Accept()
@@ -64,11 +64,11 @@ func StartListen(cfg *common.Config) (conChan chan *P2pConn, listener net.Listen
 				continue
 			}
 
-			conChan <- &P2pConn{
+			conChan <- &PeerConn{
 				conn:       conn,
 				client:     true,
 				remoteAddr: conn.RemoteAddr(),
-				taskId:     h.TaskId,
+				taskID:     h.TaskID,
 			}
 		}
 	}(cfg, conChan)
@@ -76,6 +76,7 @@ func StartListen(cfg *common.Config) (conChan chan *P2pConn, listener net.Listen
 	return
 }
 
+// CreateListener ...
 func CreateListener(cfg *common.Config) (listener net.Listener, err error) {
 	listener, err = net.ListenTCP("tcp",
 		&net.TCPAddr{
@@ -118,7 +119,7 @@ func readHeader(conn net.Conn) (h *Header, err error) {
 	h.Len = bslen
 	buf := bytes.NewBuffer(bs)
 
-	if h.TaskId, err = readString(buf); err != nil {
+	if h.TaskID, err = readString(buf); err != nil {
 		return
 	}
 
@@ -146,9 +147,9 @@ func readString(buf *bytes.Buffer) (str string, err error) {
 	return
 }
 
-func writeHeader(conn net.Conn, taskId string, cfg *common.Config) (err error) {
+func writeHeader(conn net.Conn, taskID string, cfg *common.Config) (err error) {
 	pwd, salt := gokits.GenPasswd(cfg.Auth.Password, 8)
-	all := [][]byte{[]byte(taskId),
+	all := [][]byte{[]byte(taskID),
 		[]byte(cfg.Auth.Username),
 		[]byte(pwd),
 		[]byte(salt)}

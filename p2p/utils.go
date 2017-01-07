@@ -35,7 +35,7 @@ func bytesToUint32(buf []byte) uint32 {
 }
 
 func writeNBOUint32(w io.Writer, n uint32) (err error) {
-	var buf []byte = make([]byte, 4)
+	buf := make([]byte, 4)
 	uint32ToBytes(buf, n)
 	_, err = w.Write(buf[0:])
 	return

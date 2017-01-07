@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// 定义配置映射的结构体
+// Config is struct maping the yaml configuration file
 type Config struct {
 	Server bool //是否为服务端
 	Crypto *gokits.Crypto
@@ -47,6 +47,7 @@ type Config struct {
 	Control *Control `yaml:"control"`
 }
 
+// Control is some config item for controling the p2p session
 type Control struct {
 	Speed     int `yaml:"speed"` // Unit: MiBps
 	MaxActive int `yaml:"maxActive"`
@@ -133,22 +134,23 @@ func (c *Config) validate() error {
 	return nil
 }
 
+// ParserConfig return the Config instance when parse the configuration file
 func ParserConfig(cfgfile string, server bool) (*Config, error) {
 	ncfg := normalFile(cfgfile)
-	if bs, err := ioutil.ReadFile(ncfg); err != nil {
+	bs, err := ioutil.ReadFile(ncfg)
+	if err != nil {
 		return nil, err
-	} else {
-		cfg := new(Config)
-		cfg.Server = server
-		if err := yaml.Unmarshal(bs, cfg); err != nil {
-			return nil, err
-		}
-
-		if err := cfg.validate(); err != nil {
-			return nil, err
-		}
-
-		cfg.defaultValue()
-		return cfg, nil
 	}
+	cfg := new(Config)
+	cfg.Server = server
+	if err := yaml.Unmarshal(bs, cfg); err != nil {
+		return nil, err
+	}
+
+	if err := cfg.validate(); err != nil {
+		return nil, err
+	}
+
+	cfg.defaultValue()
+	return cfg, nil
 }

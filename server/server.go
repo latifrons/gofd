@@ -10,14 +10,16 @@ import (
 	"github.com/xtfly/gokits"
 )
 
+// Server ..
 type Server struct {
 	common.BaseService
 	// 用于缓存当前接收到任务
 	cache *gokits.Cache
 	// Session管理
-	sessionMgnt *p2p.P2pSessionMgnt
+	sessionMgnt *p2p.TaskSessionMgnt
 }
 
+// NewServer ..
 func NewServer(cfg *common.Config) (*Server, error) {
 	s := &Server{
 		cache:       gokits.NewCache(5 * time.Minute),
@@ -27,6 +29,7 @@ func NewServer(cfg *common.Config) (*Server, error) {
 	return s, nil
 }
 
+// OnStart ...
 func (s *Server) OnStart(c *common.Config, e *echo.Echo) error {
 	go func() { s.sessionMgnt.Start() }()
 
@@ -39,6 +42,7 @@ func (s *Server) OnStart(c *common.Config, e *echo.Echo) error {
 	return nil
 }
 
+// OnStop ...
 func (s *Server) OnStop(c *common.Config, e *echo.Echo) {
 	go func() { s.sessionMgnt.Stop() }()
 }

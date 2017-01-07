@@ -14,18 +14,18 @@ type reportInfo struct {
 }
 
 type reportor struct {
-	taskId string
+	taskID string
 	cfg    *common.Config
 	client *http.Client
 
 	reportChan chan *reportInfo
 }
 
-func NewReportor(taskId string, cfg *common.Config) *reportor {
+func newReportor(taskID string, cfg *common.Config) *reportor {
 	r := &reportor{
-		taskId:     taskId,
+		taskID:     taskID,
 		cfg:        cfg,
-		client:     common.CreateHttpClient(cfg),
+		client:     common.CreateHTTPClient(cfg),
 		reportChan: make(chan *reportInfo, 20),
 	}
 
@@ -49,23 +49,23 @@ func (r *reportor) Close() {
 
 func (r *reportor) reportImp(ri *reportInfo) {
 	if int(ri.percentComplete) == 100 {
-		log.Infof("[%s] Report session status... completed", r.taskId)
+		log.Infof("[%s] Report session status... completed", r.taskID)
 	}
 	csr := &StatusReport{
-		TaskId:          r.taskId,
+		TaskID:          r.taskID,
 		IP:              r.cfg.Net.IP,
 		PercentComplete: ri.percentComplete,
 	}
 	bs, err := json.Marshal(csr)
 	if err != nil {
-		log.Errorf("[%s] Report session status failed. error=%v", r.taskId, err)
+		log.Errorf("[%s] Report session status failed. error=%v", r.taskID, err)
 		return
 	}
 
-	_, err = common.SendHttpReq(r.cfg, "POST",
+	_, err = common.SendHTTPReq(r.cfg, "POST",
 		ri.serverAddr, "/api/v1/server/tasks/status", bs)
 	if err != nil {
-		log.Errorf("[%s] Report session status failed. error=%v", r.taskId, err)
+		log.Errorf("[%s] Report session status failed. error=%v", r.taskID, err)
 	}
 	return
 }

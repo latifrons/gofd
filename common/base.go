@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/engine/standard"
 )
 
+// Service is a common service interface
 type Service interface {
 	Start() error
 	Stop() bool
@@ -18,6 +19,7 @@ type Service interface {
 	IsRunning() bool
 }
 
+// BaseService is the basic service struct with config and status
 type BaseService struct {
 	name    string
 	running uint32 // atomic
@@ -26,6 +28,7 @@ type BaseService struct {
 	svc     Service
 }
 
+// NewBaseService return created a basic service instance
 func NewBaseService(cfg *Config, name string, svc Service) *BaseService {
 	return &BaseService{
 		name:    name,
@@ -70,6 +73,7 @@ func (s *BaseService) runEcho() error {
 	return nil
 }
 
+// Start the service
 func (s *BaseService) Start() error {
 	if atomic.CompareAndSwapUint32(&s.running, 0, 1) {
 		s.initlog()
@@ -79,31 +83,32 @@ func (s *BaseService) Start() error {
 		}
 		go s.runEcho()
 		return nil
-	} else {
-		return errors.New("Started aleadry.")
 	}
+	return errors.New("Started aleadry.")
 }
 
+// OnStart implements Service
 func (s *BaseService) OnStart(c *Config, e *echo.Echo) error { return nil }
 
+// Stop the service
 func (s *BaseService) Stop() bool {
 	if atomic.CompareAndSwapUint32(&s.running, 1, 0) {
 		log.Infof("Stopping %s", s.name)
 		s.svc.OnStop(s.Cfg, s.echo)
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
-// Implements Service
+// OnStop implements Service
 func (s *BaseService) OnStop(c *Config, e *echo.Echo) {}
 
-// Implements Service
+// IsRunning implements Service
 func (s *BaseService) IsRunning() bool {
 	return atomic.LoadUint32(&s.running) == 1
 }
 
+// Auth using basic authorization
 func (s *BaseService) Auth(u, p string) bool {
 	if u == s.Cfg.Auth.Username && p == s.Cfg.Auth.Password {
 		return true

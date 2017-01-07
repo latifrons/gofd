@@ -9,8 +9,7 @@ import (
 	"github.com/xtfly/gokits"
 )
 
-//------------------------------------------
-// POST /api/v1/server/tasks
+// CreateTask POST /api/v1/server/tasks
 func (s *Server) CreateTask(c echo.Context) (err error) {
 	//  获取Body
 	t := new(CreateTask)
@@ -20,22 +19,22 @@ func (s *Server) CreateTask(c echo.Context) (err error) {
 	}
 
 	// 检查任务是否存在
-	if v, ok := s.cache.Get(t.Id); ok {
+	v, ok := s.cache.Get(t.ID)
+	if ok {
 		cti := v.(*CachedTaskInfo)
 		if cti.EqualCmp(t) {
 			return c.String(http.StatusAccepted, "")
-		} else {
-			log.Debugf("[%s] Recv task, task is existed", t.Id)
-			return c.String(http.StatusBadRequest, TaskStatus_TaskExist.String())
 		}
+		log.Debugf("[%s] Recv task, task is existed", t.ID)
+		return c.String(http.StatusBadRequest, TaskExist.String())
 	}
 
-	log.Infof("[%s] Recv task, file=%v, ips=%v", t.Id, t.DispatchFiles, t.DestIPs)
+	log.Infof("[%s] Recv task, file=%v, ips=%v", t.ID, t.DispatchFiles, t.DestIPs)
 
 	cti := NewCachedTaskInfo(s, t)
-	s.cache.Set(t.Id, cti, gokits.NoExpiration)
+	s.cache.Set(t.ID, cti, gokits.NoExpiration)
 	s.cache.OnEvicted(func(id string, v interface{}) {
-		log.Infof("[%s] Remove task cache", t.Id)
+		log.Infof("[%s] Remove task cache", t.ID)
 		cti := v.(*CachedTaskInfo)
 		cti.quitChan <- struct{}{}
 	})
@@ -44,35 +43,33 @@ func (s *Server) CreateTask(c echo.Context) (err error) {
 	return c.String(http.StatusAccepted, "")
 }
 
-//------------------------------------------
-// DELETE /api/v1/server/tasks/:id
+// CancelTask DELETE /api/v1/server/tasks/:id
 func (s *Server) CancelTask(c echo.Context) error {
 	id := c.Param("id")
 	log.Infof("[%s] Recv cancel task", id)
-	if v, ok := s.cache.Get(id); !ok {
-		return c.String(http.StatusBadRequest, TaskStatus_TaskNotExist.String())
-	} else {
-		cti := v.(*CachedTaskInfo)
-		cti.stopChan <- struct{}{}
-		return c.JSON(http.StatusAccepted, "")
+	v, ok := s.cache.Get(id)
+	if !ok {
+		return c.String(http.StatusBadRequest, TaskNotExist.String())
 	}
+	cti := v.(*CachedTaskInfo)
+	cti.stopChan <- struct{}{}
+	return c.JSON(http.StatusAccepted, "")
 }
 
-//------------------------------------------
-// GET /api/v1/server/tasks/:id
+// QueryTask GET /api/v1/server/tasks/:id
 func (s *Server) QueryTask(c echo.Context) error {
 	id := c.Param("id")
 	log.Infof("[%s] Recv query task", id)
-	if v, ok := s.cache.Get(id); !ok {
-		return c.String(http.StatusBadRequest, TaskStatus_TaskNotExist.String())
-	} else {
-		cti := v.(*CachedTaskInfo)
-		return c.JSON(http.StatusOK, cti.Query())
+	v, ok := s.cache.Get(id)
+	if !ok {
+		return c.String(http.StatusBadRequest, TaskNotExist.String())
 	}
+	cti := v.(*CachedTaskInfo)
+	return c.JSON(http.StatusOK, cti.Query())
+
 }
 
-//------------------------------------------
-// POST /api/v1/server/tasks/status
+// ReportTask POST /api/v1/server/tasks/status
 func (s *Server) ReportTask(c echo.Context) (err error) {
 	//  获取Body
 	csr := new(p2p.StatusReport)
@@ -81,8 +78,8 @@ func (s *Server) ReportTask(c echo.Context) (err error) {
 		return
 	}
 
-	log.Debugf("[%s] Recv task report, ip=%v, pecent=%v", csr.TaskId, csr.IP, csr.PercentComplete)
-	if v, ok := s.cache.Get(csr.TaskId); ok {
+	log.Debugf("[%s] Recv task report, ip=%v, pecent=%v", csr.TaskID, csr.IP, csr.PercentComplete)
+	if v, ok := s.cache.Get(csr.TaskID); ok {
 		cti := v.(*CachedTaskInfo)
 		cti.reportChan <- csr
 	}
