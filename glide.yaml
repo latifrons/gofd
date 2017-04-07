@@ -3,13 +3,13 @@ import:
 - package: github.com/cihub/seelog
   version: v2.6
 - package: github.com/labstack/echo
-  version: v2.0.2
+  version: v3.0.3
   subpackages:
   - engine/standard
   - log
   - middleware
 - package: github.com/labstack/gommon
-  version: v0.0.3
+  version: v0.2.1
   subpackages:
   - log
 - package: github.com/xtfly/gokits

@@ -12,7 +12,7 @@ import (
 
 // Server ..
 type Server struct {
-	common.BaseService
+	*common.BaseService
 	// 用于缓存当前接收到任务
 	cache *gokits.Cache
 	// Session管理
@@ -25,7 +25,7 @@ func NewServer(cfg *common.Config) (*Server, error) {
 		cache:       gokits.NewCache(5 * time.Minute),
 		sessionMgnt: p2p.NewSessionMgnt(cfg),
 	}
-	s.BaseService = *common.NewBaseService(cfg, cfg.Name, s)
+	s.BaseService = common.NewBaseService(cfg, cfg.Name, s)
 	return s, nil
 }
 
@@ -44,5 +44,5 @@ func (s *Server) OnStart(c *common.Config, e *echo.Echo) error {
 
 // OnStop ...
 func (s *Server) OnStop(c *common.Config, e *echo.Echo) {
-	go func() { s.sessionMgnt.Stop() }()
+	s.sessionMgnt.Stop()
 }

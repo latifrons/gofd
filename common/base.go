@@ -1,13 +1,15 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync/atomic"
 
+	"time"
+
 	log "github.com/cihub/seelog"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 )
 
 // Service is a common service interface
@@ -46,28 +48,20 @@ func (s *BaseService) initlog() {
 			log.ReplaceLogger(logger)
 		}
 	}
-
-	// init echo log
-	s.echo.SetLogger(NewEchoLogger())
 }
 
-func (s *BaseService) runEcho() error {
+func (s *BaseService) runEcho() (err error) {
 	net := s.Cfg.Net
-	var sr *standard.Server
+	addr := fmt.Sprintf("%s:%v", net.IP, net.MgntPort)
+	log.Infof("Starting http server %s", addr)
 	if net.TLS != nil {
-		sr = standard.WithTLS(fmt.Sprintf("%s:%v", net.IP, net.MgntPort),
-			net.TLS.Cert,
-			net.TLS.Key,
-		)
+		err = s.echo.StartTLS(addr, net.TLS.Cert, net.TLS.Key)
 	} else {
-		sr = standard.New(fmt.Sprintf("%s:%v", net.IP, net.MgntPort))
+		err = s.echo.Start(addr)
 	}
-	sr.SetHandler(s.echo)
-	sr.SetLogger(s.echo.Logger())
 
-	log.Infof("Starting http server %s:%v", net.IP, net.MgntPort)
-	if err := sr.Start(); err != nil {
-		log.Infof("Start http server %s:%v failed %v", net.IP, net.MgntPort, err)
+	if err != nil {
+		log.Infof("Start http server %s failed, %v", addr, err)
 		return err
 	}
 	return nil
@@ -81,8 +75,17 @@ func (s *BaseService) Start() error {
 		if err := s.svc.OnStart(s.Cfg, s.echo); err != nil {
 			return err
 		}
-		go s.runEcho()
-		return nil
+
+		done := make(chan error)
+		go func() {
+			done <- s.runEcho()
+		}()
+		select {
+		case err := <-done:
+			return err
+		case <-time.After(500 * time.Millisecond):
+			return nil
+		}
 	}
 	return errors.New("Started aleadry.")
 }
@@ -95,6 +98,9 @@ func (s *BaseService) Stop() bool {
 	if atomic.CompareAndSwapUint32(&s.running, 1, 0) {
 		log.Infof("Stopping %s", s.name)
 		s.svc.OnStop(s.Cfg, s.echo)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		s.echo.Shutdown(ctx)
 		return true
 	}
 	return false
@@ -109,7 +115,7 @@ func (s *BaseService) IsRunning() bool {
 }
 
 // Auth using basic authorization
-func (s *BaseService) Auth(u, p string) bool {
+func (s *BaseService) Auth(u, p string, ctx echo.Context) bool {
 	if u == s.Cfg.Auth.Username && p == s.Cfg.Auth.Password {
 		return true
 	}

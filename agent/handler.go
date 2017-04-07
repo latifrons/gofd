@@ -11,7 +11,7 @@ func (svc *Agent) CreateTask(c echo.Context) (err error) {
 	//  获取Body
 	dt := new(p2p.DispatchTask)
 	if err = c.Bind(dt); err != nil {
-		log.Errorf("Recv '%s' request, decode body failed. %v", c.Request().URL(), err)
+		log.Errorf("Recv '%s' request, decode body failed. %v", c.Request().URL, err)
 		return
 	}
 
@@ -26,7 +26,7 @@ func (svc *Agent) StartTask(c echo.Context) (err error) {
 	//  获取Body
 	st := new(p2p.StartTask)
 	if err = c.Bind(st); err != nil {
-		log.Errorf("Recv '%s' request, decode body failed. %v", c.Request().URL(), err)
+		log.Errorf("Recv '%s' request, decode body failed. %v", c.Request().URL, err)
 		return
 	}
 

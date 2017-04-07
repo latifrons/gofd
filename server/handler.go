@@ -14,7 +14,7 @@ func (s *Server) CreateTask(c echo.Context) (err error) {
 	//  获取Body
 	t := new(CreateTask)
 	if err = c.Bind(t); err != nil {
-		log.Errorf("Recv [%s] request, decode body failed. %v", c.Request().URL(), err)
+		log.Errorf("Recv [%s] request, decode body failed. %v", c.Request().URL, err)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (s *Server) ReportTask(c echo.Context) (err error) {
 	//  获取Body
 	csr := new(p2p.StatusReport)
 	if err = c.Bind(csr); err != nil {
-		log.Errorf("Recv [%s] request, decode body failed. %v", c.Request().URL(), err)
+		log.Errorf("Recv [%s] request, decode body failed. %v", c.Request().URL, err)
 		return
 	}
 

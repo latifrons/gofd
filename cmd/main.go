@@ -33,11 +33,9 @@ func main() {
 
 	if *p != "" {
 		factor := gokits.NewRand(8)
-		crc := gokits.KermitStr(factor)
-		crypto, _ := gokits.NewCrypto(factor, crc)
+		crypto, _ := gokits.NewCrypto(factor)
 		stxt, _ := crypto.EncryptStr(*p)
 		fmt.Println("factor =", factor)
-		fmt.Println("crc =", crc)
 		fmt.Println("stxt =", stxt)
 		return
 	}

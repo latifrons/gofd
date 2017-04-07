@@ -17,11 +17,9 @@ type Config struct {
 	Server bool //是否为服务端
 	Crypto *gokits.Crypto
 
-	Name string `yaml:"name"`
-
+	Name    string `yaml:"name"`
 	DownDir string `yaml:"downdir,omitempty"` //只有客户端才配置
-
-	Log string `yaml:"log"`
+	Log     string `yaml:"log"`
 
 	Net struct {
 		IP       string `yaml:"ip"`
@@ -41,7 +39,6 @@ type Config struct {
 		Username string `yaml:"username"`
 		Password string `yaml:"password"`
 		Factor   string `yaml:"factor"`
-		Crc      string `yaml:"crc"`
 	} `yaml:"auth"`
 
 	Control *Control `yaml:"control"`
@@ -49,8 +46,8 @@ type Config struct {
 
 // Control is some config item for controling the p2p session
 type Control struct {
-	Speed     int `yaml:"speed"` // Unit: MiBps
-	MaxActive int `yaml:"maxActive"`
+	Speed     int `yaml:"speed"`     // Unit: MiBps
+	MaxActive int `yaml:"maxActive"` //
 	CacheSize int `yaml:"cacheSize"` // Unit: MiB
 }
 
@@ -117,12 +114,12 @@ func (c *Config) validate() error {
 		}
 	}
 
-	if c.Auth.Username == "" || c.Auth.Password == "" || c.Auth.Factor == "" || c.Auth.Crc == "" {
+	if c.Auth.Username == "" || c.Auth.Password == "" || c.Auth.Factor == "" {
 		return errors.New("Not set auth in config file")
 	}
 
 	var err error
-	c.Crypto, err = gokits.NewCrypto(c.Auth.Factor, c.Auth.Crc)
+	c.Crypto, err = gokits.NewCrypto(c.Auth.Factor)
 	if err != nil {
 		return err
 	}

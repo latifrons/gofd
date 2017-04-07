@@ -9,7 +9,7 @@ import (
 
 // Agent is the p2p client
 type Agent struct {
-	common.BaseService
+	*common.BaseService
 	sessionMgnt *p2p.TaskSessionMgnt
 }
 
@@ -18,7 +18,7 @@ func NewAgent(cfg *common.Config) (*Agent, error) {
 	c := &Agent{
 		sessionMgnt: p2p.NewSessionMgnt(cfg),
 	}
-	c.BaseService = *common.NewBaseService(cfg, cfg.Name, c)
+	c.BaseService = common.NewBaseService(cfg, cfg.Name, c)
 	return c, nil
 }
 
@@ -36,5 +36,5 @@ func (c *Agent) OnStart(cfg *common.Config, e *echo.Echo) error {
 
 // OnStop implements the Service interface
 func (c *Agent) OnStop(cfg *common.Config, e *echo.Echo) {
-	go func() { c.sessionMgnt.Stop() }()
+	c.sessionMgnt.Stop()
 }
