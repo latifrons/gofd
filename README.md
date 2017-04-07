@@ -57,7 +57,6 @@ auth:
     username: gofd #管理端口与数据端口用于认证的用户名
     password: yrsK+2iiwPqecImH7obTUm1vhnvvQzFmYYiOz5oqaoc= #管理端口与数据端口用于认证的密码
     factor: 9427e80d # passwd加密密钥因子
-    crc: 63F7  # passwd加密密钥因子的校验码
 control:
     speed: 10  # 流量控制，单位为MBps
     cacheSize: 50 # 文件下载的内存缓存大小，单位为MB
@@ -81,7 +80,6 @@ auth:
     username: gofd
     password: yrsK+2iiwPqecImH7obTUm1vhnvvQzFmYYiOz5oqaoc= 
     factor: 9427e80d
-    crc: 63F7
 control:
     cacheSize: 50 # unit is MB
     maxActive: 10
@@ -91,7 +89,6 @@ control:
 
     $ gofd -p gofd
     factor = 28711f5d
-    crc = 3084
     stxt = BkrjWALvWhXrLjVXQMUDzyEcX7UpAdDG+uoedDOfeVo=
 
 ### 启动Server
