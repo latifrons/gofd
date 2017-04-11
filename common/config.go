@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/xtfly/gokits"
+	"github.com/xtfly/gokits/gcrypto"
 
 	"gopkg.in/yaml.v2"
 )
@@ -15,7 +15,7 @@ import (
 // Config is struct maping the yaml configuration file
 type Config struct {
 	Server bool //是否为服务端
-	Crypto *gokits.Crypto
+	Crypto *gcrypto.Crypto
 
 	Name    string `yaml:"name"`
 	DownDir string `yaml:"downdir,omitempty"` //只有客户端才配置
@@ -119,7 +119,7 @@ func (c *Config) validate() error {
 	}
 
 	var err error
-	c.Crypto, err = gokits.NewCrypto(c.Auth.Factor)
+	c.Crypto, err = gcrypto.NewCrypto(c.Auth.Factor)
 	if err != nil {
 		return err
 	}

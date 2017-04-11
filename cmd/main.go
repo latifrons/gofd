@@ -9,7 +9,8 @@ import (
 	"github.com/xtfly/gofd/agent"
 	"github.com/xtfly/gofd/common"
 	"github.com/xtfly/gofd/server"
-	"github.com/xtfly/gokits"
+	"github.com/xtfly/gokits/gcrypto"
+	"github.com/xtfly/gokits/grand"
 )
 
 var (
@@ -32,8 +33,8 @@ func main() {
 	}
 
 	if *p != "" {
-		factor := gokits.NewRand(8)
-		crypto, _ := gokits.NewCrypto(factor)
+		factor := grand.NewRand(8)
+		crypto, _ := gcrypto.NewCrypto(factor)
 		stxt, _ := crypto.EncryptStr(*p)
 		fmt.Println("factor =", factor)
 		fmt.Println("stxt =", stxt)

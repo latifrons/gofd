@@ -7,14 +7,14 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/xtfly/gofd/common"
 	"github.com/xtfly/gofd/p2p"
-	"github.com/xtfly/gokits"
+	"github.com/xtfly/gokits/gcache"
 )
 
 // Server ..
 type Server struct {
 	*common.BaseService
 	// 用于缓存当前接收到任务
-	cache *gokits.Cache
+	cache *gcache.Cache
 	// Session管理
 	sessionMgnt *p2p.TaskSessionMgnt
 }
@@ -22,7 +22,7 @@ type Server struct {
 // NewServer ..
 func NewServer(cfg *common.Config) (*Server, error) {
 	s := &Server{
-		cache:       gokits.NewCache(5 * time.Minute),
+		cache:       gcache.NewCache(5 * time.Minute),
 		sessionMgnt: p2p.NewSessionMgnt(cfg),
 	}
 	s.BaseService = common.NewBaseService(cfg, cfg.Name, s)

@@ -9,7 +9,7 @@ import (
 
 	log "github.com/cihub/seelog"
 	"github.com/xtfly/gofd/common"
-	"github.com/xtfly/gokits"
+	"github.com/xtfly/gokits/gcrypto"
 )
 
 // PeerConn wraps an incoming network connection and contains metadata that helps
@@ -148,7 +148,7 @@ func readString(buf *bytes.Buffer) (str string, err error) {
 }
 
 func writePHeader(conn net.Conn, taskID string, cfg *common.Config) (err error) {
-	pwd, salt := gokits.GenPasswd(cfg.Auth.Password, 8)
+	pwd, salt := gcrypto.GenPasswd(cfg.Auth.Password, 8)
 	all := [][]byte{[]byte(taskID),
 		[]byte(cfg.Auth.Username),
 		[]byte(pwd),
@@ -175,7 +175,7 @@ func (h *PHeader) validate(cfg *common.Config) error {
 		return fmt.Errorf("username or password is incorrect")
 	}
 
-	if !gokits.CmpPasswd(cfg.Auth.Password, h.Salt, h.Password) {
+	if !gcrypto.CmpPasswd(cfg.Auth.Password, h.Salt, h.Password) {
 		return fmt.Errorf("username or password is incorrect")
 	}
 

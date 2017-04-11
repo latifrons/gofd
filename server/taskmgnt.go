@@ -9,7 +9,7 @@ import (
 	log "github.com/cihub/seelog"
 	"github.com/xtfly/gofd/common"
 	"github.com/xtfly/gofd/p2p"
-	"github.com/xtfly/gokits"
+	"github.com/xtfly/gokits/gcache"
 )
 
 type clientRsp struct {
@@ -121,7 +121,7 @@ func (ct *CachedTaskInfo) Start() {
 			// 内容相同，如果失败了，则重新启动
 			c.out <- true
 			if ct.ti.Status == TaskFailed.String() {
-				ct.s.cache.Replace(ct.id, ct, gokits.NoExpiration)
+				ct.s.cache.Replace(ct.id, ct, gcache.NoExpiration)
 				log.Infof("[%s] Task status is FAILED, will start task try again", ct.id)
 				if ts := ct.createTask(); ts != TaskInProgress {
 					ct.endTask(ts)

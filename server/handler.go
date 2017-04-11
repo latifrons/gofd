@@ -6,7 +6,7 @@ import (
 	log "github.com/cihub/seelog"
 	"github.com/labstack/echo"
 	"github.com/xtfly/gofd/p2p"
-	"github.com/xtfly/gokits"
+	"github.com/xtfly/gokits/gcache"
 )
 
 // CreateTask POST /api/v1/server/tasks
@@ -32,7 +32,7 @@ func (s *Server) CreateTask(c echo.Context) (err error) {
 	log.Infof("[%s] Recv task, file=%v, ips=%v", t.ID, t.DispatchFiles, t.DestIPs)
 
 	cti := NewCachedTaskInfo(s, t)
-	s.cache.Set(t.ID, cti, gokits.NoExpiration)
+	s.cache.Set(t.ID, cti, gcache.NoExpiration)
 	s.cache.OnEvicted(func(id string, v interface{}) {
 		log.Infof("[%s] Remove task cache", t.ID)
 		cti := v.(*CachedTaskInfo)
